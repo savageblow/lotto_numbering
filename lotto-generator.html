@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Kenya Lotto Number Generator</title>
+
+  <style>
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Arial, sans-serif;
+      color: white;
+      background: radial-gradient(circle at top, #00b894, #0984e3, #2d3436);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+    }
+
+    .container {
+      width: 90%;
+      max-width: 800px;
+      text-align: center;
+      padding: 40px;
+      border-radius: 30px;
+      background: rgba(0, 0, 0, 0.35);
+      box-shadow: 0 0 40px rgba(0, 255, 180, 0.5);
+      backdrop-filter: blur(12px);
+      position: relative;
+      z-index: 2;
+    }
+
+    h1 {
+      font-size: 42px;
+      margin-bottom: 10px;
+      text-shadow: 0 0 20px #00ffcc;
+    }
+
+    p {
+      color: #dfe6e9;
+      margin-bottom: 30px;
+    }
+
+    .lotto-balls {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      flex-wrap: wrap;
+      margin: 30px 0;
+      min-height: 100px;
+    }
+
+    .ball {
+      width: 75px;
+      height: 75px;
+      border-radius: 50%;
+      background: linear-gradient(145deg, #ffffff, #f1c40f);
+      color: #111;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 28px;
+      font-weight: bold;
+      box-shadow:
+        0 0 20px rgba(255, 255, 255, 0.9),
+        inset -5px -5px 12px rgba(0, 0, 0, 0.25);
+      animation: pop 0.5s ease forwards;
+      transform: scale(0);
+    }
+
+    .bonus-ball {
+      background: linear-gradient(145deg, #ff7675, #d63031);
+      color: white;
+      box-shadow: 0 0 25px rgba(255, 80, 80, 0.9);
+    }
+
+    @keyframes pop {
+      0% {
+        transform: scale(0) rotate(0deg);
+        opacity: 0;
+      }
+
+      70% {
+        transform: scale(1.2) rotate(360deg);
+        opacity: 1;
+      }
+
+      100% {
+        transform: scale(1) rotate(360deg);
+      }
+    }
+
+    button {
+      padding: 18px 35px;
+      border: none;
+      border-radius: 50px;
+      background: linear-gradient(90deg, #00ffcc, #ffeaa7, #00ffcc);
+      background-size: 300%;
+      color: #111;
+      font-size: 20px;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 0 25px rgba(0, 255, 204, 0.9);
+      transition: transform 0.2s ease;
+      animation: glowingButton 3s linear infinite;
+    }
+
+    button:hover {
+      transform: scale(1.08);
+    }
+
+    @keyframes glowingButton {
+      0% {
+        background-position: 0%;
+      }
+
+      100% {
+        background-position: 300%;
+      }
+    }
+
+    .status {
+      margin-top: 20px;
+      font-size: 18px;
+      color: #ffeaa7;
+      min-height: 25px;
+    }
+
+    .sparkle {
+      position: absolute;
+      width: 8px;
+      height: 8px;
+      background: white;
+      border-radius: 50%;
+      animation: sparkleMove 3s linear infinite;
+      opacity: 0.8;
+    }
+
+    @keyframes sparkleMove {
+      0% {
+        transform: translateY(100vh) scale(0);
+        opacity: 0;
+      }
+
+      30% {
+        opacity: 1;
+      }
+
+      100% {
+        transform: translateY(-100vh) scale(1.5);
+        opacity: 0;
+      }
+    }
+
+    .confetti {
+      position: fixed;
+      width: 10px;
+      height: 10px;
+      top: -10px;
+      animation: fall 2.5s linear forwards;
+      z-index: 1;
+    }
+
+    @keyframes fall {
+      to {
+        transform: translateY(110vh) rotate(720deg);
+        opacity: 0;
+      }
+    }
+
+    .footer {
+      margin-top: 25px;
+      font-size: 13px;
+      color: #b2bec3;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <h1>Kenya Lotto Generator</h1>
+    <p>Generate random lucky numbers in Kenya Lotto 6/49 style.</p>
+
+    <button onclick="startLotto()">Generate Lucky Numbers</button>
+
+    <div class="status" id="status">Click the button to begin.</div>
+
+    <div class="lotto-balls" id="lottoBalls"></div>
+
+    <div class="footer">
+      For entertainment only. Random numbers do not guarantee winning.
+    </div>
+  </div>
+
+  <script>
+    const lottoBallsContainer = document.getElementById("lottoBalls");
+    const statusText = document.getElementById("status");
+
+    function generateKenyaLotto({
+      count = 6,
+      minNumber = 1,
+      maxNumber = 49,
+      includeBonus = true,
+      bonusMin = 0,
+      bonusMax = 9
+    } = {}) {
+      const pool = [];
+
+      for (let number = minNumber; number <= maxNumber; number++) {
+        pool.push(number);
+      }
+
+      const selectedNumbers = [];
+
+      while (selectedNumbers.length < count) {
+        const randomIndex = Math.floor(Math.random() * pool.length);
+        const pickedNumber = pool.splice(randomIndex, 1)[0];
+
+        selectedNumbers.push(pickedNumber);
+      }
+
+      selectedNumbers.sort((a, b) => a - b);
+
+      const result = {
+        mainNumbers: selectedNumbers
+      };
+
+      if (includeBonus) {
+        result.bonusNumber =
+          Math.floor(Math.random() * (bonusMax - bonusMin + 1)) + bonusMin;
+      }
+
+      return result;
+    }
+
+    function startLotto() {
+      lottoBallsContainer.innerHTML = "";
+      statusText.textContent = "Shuffling numbers...";
+
+      createConfetti();
+
+      let shuffleCount = 0;
+
+      const shuffleInterval = setInterval(() => {
+        lottoBallsContainer.innerHTML = "";
+
+        for (let i = 0; i < 6; i++) {
+          const fakeNumber = Math.floor(Math.random() * 49) + 1;
+          const fakeBall = createBall(fakeNumber);
+          lottoBallsContainer.appendChild(fakeBall);
+        }
+
+        shuffleCount++;
+
+        if (shuffleCount >= 12) {
+          clearInterval(shuffleInterval);
+          revealFinalNumbers();
+        }
+      }, 120);
+    }
+
+    function revealFinalNumbers() {
+      lottoBallsContainer.innerHTML = "";
+
+      const lotto = generateKenyaLotto({
+        count: 6,
+        minNumber: 1,
+        maxNumber: 49,
+        includeBonus: true,
+        bonusMin: 0,
+        bonusMax: 9
+      });
+
+      statusText.textContent = "Your lucky numbers are ready!";
+
+      lotto.mainNumbers.forEach((number, index) => {
+        setTimeout(() => {
+          const ball = createBall(number);
+          lottoBallsContainer.appendChild(ball);
+        }, index * 300);
+      });
+
+      setTimeout(() => {
+        const bonusBall = createBall(lotto.bonusNumber, true);
+        lottoBallsContainer.appendChild(bonusBall);
+        statusText.textContent = "Main numbers + bonus number generated!";
+        createConfetti();
+      }, lotto.mainNumbers.length * 300 + 300);
+    }
+
+    function createBall(number, isBonus = false) {
+      const ball = document.createElement("div");
+
+      ball.classList.add("ball");
+
+      if (isBonus) {
+        ball.classList.add("bonus-ball");
+        ball.textContent = "B" + number;
+      } else {
+        ball.textContent = String(number).padStart(2, "0");
+      }
+
+      return ball;
+    }
+
+    function createConfetti() {
+      const colors = [
+        "#00ffcc",
+        "#ffeaa7",
+        "#ff7675",
+        "#74b9ff",
+        "#55efc4",
+        "#fd79a8"
+      ];
+
+      for (let i = 0; i < 80; i++) {
+        const confetti = document.createElement("div");
+
+        confetti.classList.add("confetti");
+        confetti.style.left = Math.random() * 100 + "vw";
+        confetti.style.backgroundColor =
+          colors[Math.floor(Math.random() * colors.length)];
+        confetti.style.animationDuration = Math.random() * 2 + 1.5 + "s";
+        confetti.style.transform = `rotate(${Math.random() * 360}deg)`;
+
+        document.body.appendChild(confetti);
+
+        setTimeout(() => {
+          confetti.remove();
+        }, 3500);
+      }
+    }
+
+    function createSparkles() {
+      for (let i = 0; i < 40; i++) {
+        const sparkle = document.createElement("div");
+
+        sparkle.classList.add("sparkle");
+        sparkle.style.left = Math.random() * 100 + "vw";
+        sparkle.style.animationDelay = Math.random() * 3 + "s";
+        sparkle.style.animationDuration = Math.random() * 3 + 2 + "s";
+
+        document.body.appendChild(sparkle);
+      }
+    }
+
+    createSparkles();
+  </script>
+</body>
+</html>
